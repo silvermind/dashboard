@@ -10,11 +10,16 @@ var node = [
     "terravaloper1f4d3gkp544x8rswn229eas2vsj60uvc8mmppsq"
 ];
 
+var kava = [
+    "kavavaloper1x9hq3rjc48t5upcsr3c209ycgekfasne3l5nkc",
+];
+
 var api = [
     "http://202.61.253.70:3000",
     "http://45.9.60.250:3000",
     "http://193.26.159.233:3000",
     "http://202.61.228.167:3000",
+    "http://192.145.46.214:3000"
 ]
 
 async function getData(lcdURLmain,lcdURLtest, nodeId) {
@@ -40,7 +45,7 @@ async function getData(lcdURLmain,lcdURLtest, nodeId) {
             <li>${res.data.result.description.moniker}</li>
             <h1 class="card-title pricing-card-title">${Math.round(res.data.result.tokens/1000000).toFixed(0)}<small class="text-muted fw-light">luna</small></h1>
             <li>JAILED : ${res.data.result.jailed}</li>
-            <li>HEIGHT : ${res.data.height}</li>
+            <li>BLOCK # ${res.data.height}</li>
             </ul>
             <button type="button" class="w-100 btn btn-lg btn-outline-primary">More Info</button>
             </div>
@@ -72,7 +77,7 @@ async function getData(lcdURLmain,lcdURLtest, nodeId) {
             <li>${res.data.result.description.moniker}</li>
             <h1 class="card-title pricing-card-title">${Math.round(res.data.result.tokens/1000000).toFixed(0)}<small class="text-muted fw-light">luna</small></h1>
             <li>JAILED : ${res.data.result.jailed}</li>
-            <li>HEIGHT : ${res.data.height}</li>
+            <li>BLOCK # ${res.data.height}</li>
             </ul>
             <button type="button" class="w-100 btn btn-lg btn-outline-primary">More Info</button>
             </div>
@@ -85,7 +90,7 @@ async function getData(lcdURLmain,lcdURLtest, nodeId) {
 }
 
 setInterval(function(){ 
-    console.log("UPDATE_DATA")
+    console.log("UPDATE_DATA_KAVA")
     for(i = 0; i < node.length; i++) {
         lcdURLmain= 'https://lcd.terra.dev/staking/validators/'
         lcdURLtest = 'https://tequila-lcd.terra.dev/staking/validators/'
@@ -153,10 +158,62 @@ async function getRAW(nodeId,api){
 }
 
 setInterval(function(){ 
-    console.log("UPDATE_RAW")
+    console.log("UPDATE_RAW_TERRA")
     for(i = 0; i < api.length; i++) {
         nodeId = "node_" + i + "_"  + i
         getRAW(nodeId,api[i])
     }
 },
     5000)
+
+
+async function getDataKava(kavaURL,kavaId) {
+        try {
+           let res = await axios({
+                url: kavaURL,
+                method: 'get',
+                timeout: 8000,
+                headers: {
+                    'Content-Type': 'application/json',
+                }
+            })
+            if(res.status == 200){
+                div = document.getElementById(kavaId);
+                div.innerHTML = 
+                `
+                <div class="card mb-4 rounded-3 shadow-sm shadow-sm border-primary">
+                <div class="card-header py-3 text-white bg-primary border-primary">
+                <h4 class="my-0 fw-normal">Kava</h4>
+                </div>
+                <div class="card-body">
+                <ul class="list-unstyled mt-3 mb-4">
+                <li>${res.data.result.description.moniker}</li>
+                <h1 class="card-title pricing-card-title">${Math.round(res.data.result.tokens/1000000).toFixed(0)}<small class="text-muted fw-light">kava</small></h1>
+                <li>JAILED : ${res.data.result.jailed}</li>
+                <li>BLOCK # ${res.data.height}</li>
+                </ul>
+                <button type="button" class="w-100 btn btn-lg btn-outline-primary">More Info</button>
+                </div>
+                </div>
+                </div>
+                `
+            }
+            return res.data
+        }
+        catch (err) {
+            console.log(err)
+        }
+    }
+
+setInterval(function(){ 
+        console.log("UPDATE_DATA_KAVA")
+        for(i = 0; i < kava.length; i++) {
+            kavaURL= 'https://kava4.data.kava.io/staking/validators/'
+            kavaId = "kava_" + i
+            kavaURL = kavaURL + kava[i]
+            console.log(kavaURL,kavaId)
+            getDataKava(kavaURL,kavaId)
+            }
+        },
+        10000)
+
